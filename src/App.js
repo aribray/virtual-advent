@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { Router, Route } from "react-router-dom";
-import UserProvider from "./providers/UserProvider";
 import HomePage from "./HomePage";
 import { createBrowserHistory as createHistory } from "history";
 import Navbar from "react-bootstrap/Navbar";

@@ -1,0 +1,20 @@
+{
+  "calendar": [
+    {
+      "title": "test",
+      "start": "2020-12-10T08:30:00.000Z",
+      "end": "2020-12-10T09:30:00.000Z",
+      "description": "this is a test!",
+      "supplyList": "bucket, mop",
+      "id": 1
+    },
+    {
+      "title": "test numba 2!",
+      "start": "2020-12-04T10:00:00.000Z",
+      "end": "2020-12-04T11:30:00.000Z",
+      "description": "and i'd do it again, bop bop",
+      "supplyList": "",
+      "id": 2
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "virtual-advent",
+    "staging": "virtual-advent"
+  }
+}

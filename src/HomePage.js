@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext } from "react";
+import React, {useState, useEffect, useContext, Children } from "react";
 import SignIn from "./components/signInForm"
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -7,9 +7,6 @@ import CalendarForm from "./CalendarForm";
 import { observer } from "mobx-react";
 import CalendarDataService  from "./requests";
 import EventContainer from "./components/event"
-// import AgendaView from "./components/agendaView"
-import firebase from "firebase";
-import { firebaseAuth }from './providers/AuthProvider';
 
 
 const localizer = momentLocalizer(moment);
@@ -20,6 +17,15 @@ function HomePage({ calendarStore }) {
   const [calendarEvent, setCalendarEvent] = React.useState({});
   const [initialized, setInitialized] = React.useState(false);
 
+  const CURRENT_DATE = moment('2020,12,01').toDate();
+
+  const HighlightDateCellWrapper = ({children, value}) =>
+    React.cloneElement(Children.only(children), {
+        style: {
+            ...children.style,
+            backgroundColor: value > CURRENT_DATE ? 'darkred' : 'forestgreen',
+        },
+    });
   const hideModals = () => {
     setShowAddModal(false);
     setShowEditModal(false);
@@ -37,21 +43,30 @@ function HomePage({ calendarStore }) {
 
   const getCalendarEvents = async () => {
     const response = await CalendarDataService.getAllEvents();
-    console.log(response)
     response.get().then(querySnapshot => {
         const data = querySnapshot.docs.map(doc => doc.data());
-        console.log(data);
+
+        const events = data.map(d => {
+            console.log(d)
+            console.log(d.start.seconds)
+            let myStart = new Date(d.start * 1000)
+            console.log(myStart)
+            return {
+                title: d.title,
+                start: moment(d.start.toDate(), 'LLLL').toDate(),
+                end: moment(d.end.toDate(), 'LLLL').toDate(),
+                description: d.description,
+                supplyList: d.supplyList
+            }
+        })
+        console.log("events!!!")
+        console.log(events)
+        calendarStore.setCalendarEvents(events);
+        setInitialized(true);
     })
-    // const evs = response.data.map(d => {
-    //   return {
-    //     ...d,
-    //     start: new Date(d.start),
-    //     end: new Date(d.end)
-    //   };
-    // });
-    // calendarStore.setCalendarEvents(evs);
-    setInitialized(true);
   };
+
+  console.log(calendarStore.calendarEvents);
 
   const handleSelect = (event, e) => {
     const { start, end } = event;
@@ -113,8 +128,9 @@ function HomePage({ calendarStore }) {
         onSelectSlot={handleSelect}
         // onSelectEvent={handleSelectEvent}
         components= {{event: EventContainer({
-            onEditButtonClick: editButtonClickHandler,
-        })}}
+            onEditButtonClick: editButtonClickHandler}),
+            dateCellWrapper: HighlightDateCellWrapper,
+        }}
       />
     </div>
   );

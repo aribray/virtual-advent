@@ -1,7 +1,7 @@
 import { firestore, auth } from "./firebase";
 import "firebase/firestore";
 
-const db = firestore.collection("/events");
+const db = firestore.collection("/items");
 
 class CalendarDataService {
   getAllEvents() {

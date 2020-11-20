@@ -17,15 +17,19 @@ const EventContainer = ({ onEditButtonClick }) => props => {
 
 const MyEvent = React.memo((props) => {
     const user = useContext(AuthProvider);
+    let items = []
     const [showButton, setShowButton] = React.useState(false);
     function onClick() {
         if (user) {
             setShowButton(true)
         }
     }
-    let items = props.event.supplyList.split(',').map((supply) =>
-        <li>{supply}</li>
-    );
+
+    if (props.event.supplyList) {
+        items = props.event.supplyList.split(',').map((supply) =>
+            <li>{supply}</li>
+        );
+    }
 
     let start_date_to_moment = moment(props.event.start, 'LLLL')
     let end_date_to_moment = moment(props.event.end, 'LLLL')

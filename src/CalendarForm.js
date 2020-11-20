@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import CalendarDataService from "./requests";
 import { observer } from "mobx-react";
 import { Description } from "@material-ui/icons";
-import firebase from "firebase"
+import { firestore } from "./firebase"
 
 const buttonStyle = { marginRight: 10 };
 
@@ -35,6 +35,8 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   ]);
 
   const handleSubmit = async ev => {
+    console.log("HANDLESUBMIT")
+    console.log(ev)
     ev.preventDefault();
     if (!title || !start || !end) {
       return;
@@ -45,33 +47,14 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
       return;
     }
 
-  firebase
-    .firestore()
-    .collection("items")
+    firestore.collection("items")
     .add({
       title,
       start,
       end,
       description,
     })
-      //.then will reset the form to nothing
-      // .then(() => setName(""), setType(""), setQty(''), setDescription(""))
-    // const data = { id, title, start, end, description, supplyList };
-    // if (!edit) {
-    //   await CalendarDataService.createEvent(data);
-    // } else {
-    //   await CalendarDataService.updateEvent(data);
-    // }
-    // const response = await CalendarDataService.getAllEvents();
-    // const evs = response.data.map(d => {
-    //   console.log(d)
-    //   return {
-    //     ...d,
-    //     start: new Date(d.start),
-    //     end: new Date(d.end)
-    //   };
-    // });
-    // calendarStore.setCalendarEvents(evs);
+    // calendarStore.setCalendarEvents()
     onCancel();
   };
   const handleStartChange = date => setStart(date);
@@ -90,7 +73,7 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
         end: new Date(d.end)
       };
     });
-    calendarStore.setCalendarEvents(evs);
+    // calendarStore.setCalendarEvents(evs);
     onCancel();
   };
 

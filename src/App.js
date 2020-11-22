@@ -15,9 +15,7 @@ const history = createHistory();
 function App({ calendarStore }) {
 
   const {handleSignIn} = useContext(firebaseAuth)
-  console.log(handleSignIn)
   const { token } = useContext(firebaseAuth)
-  console.log(token)
 
   return (
     <div>
@@ -44,40 +42,3 @@ function App({ calendarStore }) {
   );
 }
 export default App;
-
-
-// import React from 'react'
-// import { ThemeProvider } from '@material-ui/core/styles'
-// import CssBaseline from '@material-ui/core/CssBaseline'
-// import theme from './theme'
-// import {
-//   Calendar,
-//   DateLocalizer,
-//   momentLocalizer,
-//   globalizeLocalizer,
-//   move,
-//   Views,
-//   Navigate,
-//   components,
-// } from 'react-big-calendar'
-// import moment from 'moment'
-
-// import events from './events'
-
-// const localizer = momentLocalizer(moment)
-
-// const App = () => (
-//   <ThemeProvider theme={theme}>
-//     <CssBaseline />
-//     <div>
-//       <Calendar
-//         localizer={localizer}
-//         defaultDate={new Date(2020,12,1)}
-//         events={events}
-//         startAccessor="start"
-//         endAccessor="end"
-//       />
-//     </div>
-//   </ThemeProvider>
-// )
-// export default App

@@ -35,32 +35,28 @@ function HomePage({ calendarStore }) {
     setShowAddModal(false);
     setShowEditModal(true);
     let { id, title, start, end, allDay, description, supplyList } = event;
-    start = new Date(start);
-    end = new Date(end);
-    const data = { id, title, start, end, allDay, description, supplyList };
+    // start = moment(start, 'LLLL').toDate();
+    // end = moment(end.toDate(), 'LLLL').toDate();
+    const data = { id, title, start, end, description, supplyList };
+    CalendarDataService.updateEvent(data.id, data);
     setCalendarEvent(data);
 };
 
   const getCalendarEvents = async () => {
     const response = await CalendarDataService.getAllEvents();
     response.get().then(querySnapshot => {
-        const data = querySnapshot.docs.map(doc => doc.data());
-
-        const events = data.map(d => {
-            console.log(d)
-            console.log(d.start.seconds)
-            let myStart = new Date(d.start * 1000)
-            console.log(myStart)
+        const events = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            const id = doc.id;
             return {
-                title: d.title,
-                start: moment(d.start.toDate(), 'LLLL').toDate(),
-                end: moment(d.end.toDate(), 'LLLL').toDate(),
-                description: d.description,
-                supplyList: d.supplyList
+                id: id,
+                title: data.title,
+                start: moment(data.start.toDate(), 'LLLL').toDate(),
+                end: moment(data.end.toDate(), 'LLLL').toDate(),
+                description: data.description,
+                supplyList: data.supplyList
             }
-        })
-        console.log("events!!!")
-        console.log(events)
+        });
         calendarStore.setCalendarEvents(events);
         setInitialized(true);
     })
@@ -70,7 +66,7 @@ function HomePage({ calendarStore }) {
 
   const handleSelect = (event, e) => {
     const { start, end } = event;
-    const data = { title: "", start, end, allDay: false, description: "", supplyList: "" };
+    const data = { title: "", start, end, description: "", supplyList: "" };
     setShowAddModal(true);
     setShowEditModal(false);
     setCalendarEvent(data);
@@ -107,7 +103,6 @@ function HomePage({ calendarStore }) {
         <Modal.Header closeButton>
           <Modal.Title>Edit Advent Event</Modal.Title>
         </Modal.Header>
-
         <Modal.Body>
           <CalendarForm
             calendarStore={calendarStore}
@@ -126,7 +121,7 @@ function HomePage({ calendarStore }) {
         selectable={true}
         style={{ height: "70vh" }}
         onSelectSlot={handleSelect}
-        // onSelectEvent={handleSelectEvent}
+        // onSelectEvent={editButtonClickHandler}
         components= {{event: EventContainer({
             onEditButtonClick: editButtonClickHandler}),
             dateCellWrapper: HighlightDateCellWrapper,

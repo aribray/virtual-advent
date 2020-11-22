@@ -7,12 +7,10 @@ const SignIn = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log('handleSubmit')
         handleSignIn()
       }
       const handleChange = e => {
         const {name, value} = e.target;
-        console.log(inputs)
         setInputs(prev => ({...prev, [name]: value}))
       }
 

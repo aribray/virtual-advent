@@ -16,14 +16,8 @@ const EventContainer = ({ onEditButtonClick }) => props => {
 }
 
 const MyEvent = React.memo((props) => {
-    const user = useContext(AuthProvider);
+    // const user = useContext(AuthProvider);
     let items = []
-    const [showButton, setShowButton] = React.useState(false);
-    function onClick() {
-        if (user) {
-            setShowButton(true)
-        }
-    }
 
     if (props.event.supplyList) {
         items = props.event.supplyList.split(',').map((supply) =>
@@ -44,7 +38,7 @@ const MyEvent = React.memo((props) => {
     )
 
     let popoverClickRootClose = (
-        <Popover id="popover-trigger-click-root-close" style={{ zIndex: 10000 }} onClick={onClick}>
+        <Popover id="popover-trigger-click-root-close" style={{ zIndex: 10000 }}>
             <h2><strong>Event Name: {props.event.title}</strong></h2>
             <h3>Description: {props.event.description}</h3>
             <ul>
@@ -59,8 +53,9 @@ const MyEvent = React.memo((props) => {
                 <ul>
                     {items}
                 </ul>
-            { showButton ? <EditButton /> : null }
-
+            <div>
+                <EditButton/>
+            </div>
         </Popover>
     );
 

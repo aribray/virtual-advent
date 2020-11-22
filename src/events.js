@@ -4,7 +4,6 @@ export default [
   {
     id: 0,
     title: 'All Day Event very long title',
-    allDay: true,
     start: new Date(2020, 12, 0),
     end: new Date(2020, 12, 1),
   },

@@ -5,8 +5,7 @@ import DatePicker from "react-datepicker";
 import Button from "react-bootstrap/Button";
 import CalendarDataService from "./requests";
 import { observer } from "mobx-react";
-import { Description } from "@material-ui/icons";
-import { firestore } from "./firebase"
+import moment from 'moment'
 
 const buttonStyle = { marginRight: 10 };
 
@@ -35,8 +34,6 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   ]);
 
   const handleSubmit = async ev => {
-    console.log("HANDLESUBMIT")
-    console.log(ev)
     ev.preventDefault();
     if (!title || !start || !end) {
       return;
@@ -46,17 +43,43 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
       alert("Start time must be earlier than end date");
       return;
     }
-
-    firestore.collection("items")
-    .add({
+    const event = {
+      id,
       title,
       start,
       end,
       description,
-    })
-    // calendarStore.setCalendarEvents()
-    onCancel();
+      supplyList
+    };
+
+    if (!edit) {
+      await CalendarDataService.createEvent(event)
+    } else {
+      await CalendarDataService.updateEvent(event.id, event)
+    }
+
+    const response = await CalendarDataService.getAllEvents();
+      response.get().then(querySnapshot => {
+         const events = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            const id = doc.id;
+            return {
+              id: id,
+              title: data.title,
+              start: moment(data.start.toDate(), 'LLLL').toDate(),
+              end: moment(data.end.toDate(), 'LLLL').toDate(),
+              description: data.description,
+              supplyList: data.supplyList
+          }
+          });
+          calendarStore.setCalendarEvents(events);
+          onCancel();
+        })
+        .catch(err => {
+          console.log('Error fetching records', err);
+        })
   };
+
   const handleStartChange = date => setStart(date);
   const handleEndChange = date => setEnd(date);
   const handleTitleChange = ev => setTitle(ev.target.value);
@@ -66,15 +89,20 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   const deleteCalendarEvent = async () => {
     await CalendarDataService.deleteEvent(calendarEvent.id);
     const response = await CalendarDataService.getAllEvents();
-    const evs = response.data.map(d => {
-      return {
-        ...d,
-        start: new Date(d.start),
-        end: new Date(d.end)
-      };
-    });
-    // calendarStore.setCalendarEvents(evs);
-    onCancel();
+    response.get().then(querySnapshot => {
+      const data = querySnapshot.docs.map(doc => doc.data());
+      const events = data.map(d => {
+          return {
+              title: d.title,
+              start: moment(d.start.toDate(), 'LLLL').toDate(),
+              end: moment(d.end.toDate(), 'LLLL').toDate(),
+              description: d.description,
+              supplyList: d.supplyList
+          }
+      })
+      calendarStore.setCalendarEvents(events);
+      onCancel();
+  })
   };
 
   return (

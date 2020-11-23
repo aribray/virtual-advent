@@ -33,9 +33,6 @@ function App({ calendarStore }) {
             path="/"
             exact
             render={props => token === null ? <SignIn /> : <HomePage {...props} calendarStore={calendarStore} />}
-            // component={props => (
-            //   <HomePage {...props} calendarStore={calendarStore} />
-            // )}
           />
         </Router>
     </div>

@@ -34,10 +34,8 @@ function HomePage({ calendarStore }) {
   const editButtonClickHandler = (event, e) => {
     setShowAddModal(false);
     setShowEditModal(true);
-    let { id, title, start, end, allDay, description, supplyList } = event;
-    // start = moment(start, 'LLLL').toDate();
-    // end = moment(end.toDate(), 'LLLL').toDate();
-    const data = { id, title, start, end, description, supplyList };
+    let { id, title, start, end, description, supplyList, isGroupActivity, videoID, linkPreview } = event;
+    const data = { id, title, start, end, description, supplyList, isGroupActivity, videoID, linkPreview };
     CalendarDataService.updateEvent(data.id, data);
     setCalendarEvent(data);
 };
@@ -54,7 +52,10 @@ function HomePage({ calendarStore }) {
                 start: moment(data.start.toDate(), 'LLLL').toDate(),
                 end: moment(data.end.toDate(), 'LLLL').toDate(),
                 description: data.description,
-                supplyList: data.supplyList
+                supplyList: data.supplyList,
+                isGroupActivity: data.isGroupActivity,
+                vidoeID: data.videoID,
+                linkPreview: data.linkPreview
             }
         });
         calendarStore.setCalendarEvents(events);
@@ -66,15 +67,11 @@ function HomePage({ calendarStore }) {
 
   const handleSelect = (event, e) => {
     const { start, end } = event;
-    const data = { title: "", start, end, description: "", supplyList: "" };
+    const data = { title: "", start, end, description: "", supplyList: "", isGroupActivity: false, videoID: "", linkPreview: "" };
     setShowAddModal(true);
     setShowEditModal(false);
     setCalendarEvent(data);
   };
-
-    const handleSelectEvent = (event, e) => {
-
-    };
 
   React.useEffect(() => {
     if (!initialized) {

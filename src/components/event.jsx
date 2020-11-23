@@ -8,7 +8,10 @@ import { getCalendar } from "../requests";
 import {Button, Overlay} from 'react-bootstrap';
 import {OverlayTrigger} from 'react-bootstrap';
 import {Popover} from 'react-bootstrap';
-import AuthProvider  from "../providers/AuthProvider"
+import getYouTubeID from 'get-youtube-id';
+import YouTube from 'react-youtube';
+import { ReactTinyLink } from 'react-tiny-link';
+
 
 
 const EventContainer = ({ onEditButtonClick }) => props => {
@@ -18,11 +21,42 @@ const EventContainer = ({ onEditButtonClick }) => props => {
 const MyEvent = React.memo((props) => {
     // const user = useContext(AuthProvider);
     let items = []
+    let isGroupActivity = ""
+    let eventVideo = ""
+    let eventVideoID = ""
+    let linkPreview = ""
 
     if (props.event.supplyList) {
         items = props.event.supplyList.split(',').map((supply) =>
             <li>{supply}</li>
         );
+    }
+
+    if (props.event.isGroupActivity === true) {
+        isGroupActivity = <h3>Yes</h3>
+    } else {
+        isGroupActivity = <h3>No</h3>
+    }
+
+    if (props.event.videoID) {
+        eventVideoID = getYouTubeID(props.event.videoID)
+
+        const opts = {
+            height: '390',
+            width: '640'
+        };
+
+        eventVideo = <YouTube videoId={eventVideoID} opts={opts} />
+    }
+
+    if (props.event.linkPreview) {
+        linkPreview = <ReactTinyLink
+            cardSize="small"
+            showGraphic={true}
+            maxLine={3}
+            minLine={1}
+            url={props.event.linkPreview}
+        />
     }
 
     let start_date_to_moment = moment(props.event.start, 'LLLL')
@@ -49,10 +83,20 @@ const MyEvent = React.memo((props) => {
                     End Time: {end}
                 </li>
             </ul>
+            <div className="video-div">
+                {eventVideo}
+            </div>
             <div className="supply-list" >Supply List</div>
                 <ul>
                     {items}
                 </ul>
+            <div className="group-activity">
+                Group Activity?
+            </div>
+                {isGroupActivity}
+            <div className="link-preview">
+                {linkPreview}
+            </div>
             <div>
                 <EditButton/>
             </div>

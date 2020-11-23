@@ -16,6 +16,9 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   const [description, setDescription] = React.useState("");
   const [supplyList, setSupplyList] = React.useState("");
   const [id, setId] = React.useState(null);
+  const [isGroupActivity, setIsGroupActivity] = React.useState(false);
+  const [videoID, setVideoID] = React.useState("");
+  const [linkPreview, setLinkPreview] = React.useState("");
 
   React.useEffect(() => {
     setTitle(calendarEvent.title);
@@ -24,13 +27,19 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
     setId(calendarEvent.id);
     setDescription(calendarEvent.description);
     setSupplyList(calendarEvent.supplyList);
+    setIsGroupActivity(calendarEvent.isGroupActivity);
+    setVideoID(calendarEvent.videoID);
+    setLinkPreview(calendarEvent.linkPreview);
   }, [
     calendarEvent.title,
     calendarEvent.start,
     calendarEvent.end,
     calendarEvent.id,
     calendarEvent.description,
-    calendarEvent.supplyList
+    calendarEvent.supplyList,
+    calendarEvent.isGroupActivity,
+    calendarEvent.videoID,
+    calendarEvent.linkPreview
   ]);
 
   const handleSubmit = async ev => {
@@ -44,18 +53,23 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
       return;
     }
     const event = {
-      id,
       title,
       start,
       end,
       description,
-      supplyList
+      supplyList,
+      isGroupActivity,
+      videoID,
+      linkPreview
     };
+
+    console.log('EVENT!')
+    console.log(event)
 
     if (!edit) {
       await CalendarDataService.createEvent(event)
     } else {
-      await CalendarDataService.updateEvent(event.id, event)
+      await CalendarDataService.updateEvent(id, event)
     }
 
     const response = await CalendarDataService.getAllEvents();
@@ -69,7 +83,10 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
               start: moment(data.start.toDate(), 'LLLL').toDate(),
               end: moment(data.end.toDate(), 'LLLL').toDate(),
               description: data.description,
-              supplyList: data.supplyList
+              supplyList: data.supplyList,
+              isGroupActivity: data.isGroupActivity,
+              videoID: data.videoID,
+              linkPreview: data.linkPreview
           }
           });
           calendarStore.setCalendarEvents(events);
@@ -85,6 +102,9 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   const handleTitleChange = ev => setTitle(ev.target.value);
   const handleDescriptionChange = ev => setDescription(ev.target.value)
   const handleSupplyListChange = ev => setSupplyList(ev.target.value)
+  const handleIsGroupActivityChange = ev => setIsGroupActivity(ev.target.checked)
+  const handleVideoIDChange = ev => setVideoID(ev.target.value)
+  const handleLinkPreviewChange = ev => setLinkPreview(ev.target.value)
 
   const deleteCalendarEvent = async () => {
     await CalendarDataService.deleteEvent(calendarEvent.id);
@@ -97,7 +117,10 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
               start: moment(d.start.toDate(), 'LLLL').toDate(),
               end: moment(d.end.toDate(), 'LLLL').toDate(),
               description: d.description,
-              supplyList: d.supplyList
+              supplyList: d.supplyList,
+              isGroupActivity: d.isGroupActivity,
+              videoID: d.videoID,
+              linkPreview: d.linkPreview
           }
       })
       calendarStore.setCalendarEvents(events);
@@ -157,20 +180,58 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
       </Form.Row>
 
       <Form.Row>
+        <Form.Group as={Col} md="12" controlId="videoID">
+          <Form.Label>Link to Youtube Video</Form.Label>
+            <br />
+              <Form.Control
+                type="text"
+                name="videoID"
+                placeholder="Add link to YouTube video"
+                defaultValue=""
+                onChange={handleVideoIDChange}
+                 />
+        </Form.Group>
+      </Form.Row>
+
+      <Form.Row>
+        <Form.Group as={Col} md="12" controlId="linkPreview">
+          <Form.Label>Link to Activity Website</Form.Label>
+            <br />
+              <Form.Control
+                type="text"
+                name="linkPreview"
+                defaultValue=""
+                onChange={handleLinkPreviewChange}
+                placeholder="Add link to activity website" />
+        </Form.Group>
+      </Form.Row>
+
+      <Form.Row>
         <Form.Group as={Col} md="12" controlId="supplyList">
           <Form.Label>Supplies Needed</Form.Label>
             <br />
             <Form.Control
-              type="textarea"
+              as="textarea"
+              rows={3}
               name="supplyList"
               placeholder="Enter supplies needed ONE AT A TIME, followed by a comma"
               value={supplyList || ""}
               onChange={handleSupplyListChange}
             />
-              {/* <textarea className="form-control" value={supplyList} onChange={handleSupplyListChange} /> */}
         </Form.Group>
       </Form.Row>
-
+      <Form.Row>
+        <Form.Group as={Col} md="12" controlId="eventType">
+          <Form.Label>Is this a group activity?</Form.Label>
+            <br />
+            <Form.Check
+              type="checkbox"
+              label="Yes, this is a group activity."
+              checked={isGroupActivity}
+              onChange={handleIsGroupActivityChange}
+            />
+        </Form.Group>
+      </Form.Row>
       <Button type="submit" style={buttonStyle}>
         Save
       </Button>

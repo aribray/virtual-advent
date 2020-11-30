@@ -3,9 +3,10 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import Button from "react-bootstrap/Button";
-import CalendarDataService from "./requests";
+import { CalendarDataService } from "./requests";
 import { observer } from "mobx-react";
-import moment from 'moment'
+import moment from 'moment';
+import getYouTubeID from 'get-youtube-id';
 
 const buttonStyle = { marginRight: 10 };
 
@@ -17,7 +18,7 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
   const [supplyList, setSupplyList] = React.useState("");
   const [id, setId] = React.useState(null);
   const [isGroupActivity, setIsGroupActivity] = React.useState(false);
-  const [videoID, setVideoID] = React.useState("");
+  let [videoID, setVideoID] = React.useState("");
   const [linkPreview, setLinkPreview] = React.useState("");
 
   React.useEffect(() => {
@@ -52,6 +53,14 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
       alert("Start time must be earlier than end date");
       return;
     }
+
+
+
+    videoID = getYouTubeID(videoID)
+
+    console.log(videoID)
+
+
     const event = {
       title,
       start,
@@ -175,7 +184,7 @@ function CalendarForm({ calendarStore, calendarEvent, onCancel, edit }) {
         <Form.Group as={Col} md="12" controlId="description">
           <Form.Label>Description</Form.Label>
             <br />
-              <textarea className="form-control" value={description} onChange={handleDescriptionChange} />
+              <textarea className="form-control" value={description || ""} onChange={handleDescriptionChange} />
         </Form.Group>
       </Form.Row>
 

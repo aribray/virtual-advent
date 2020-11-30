@@ -1,41 +1,31 @@
-import React, { useContext } from "react";
+import React, { Component } from "react";
 import { Router, Route } from "react-router-dom";
 import HomePage from "./HomePage";
 import { createBrowserHistory as createHistory } from "history";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
 import "./App.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "react-datepicker/dist/react-datepicker.css";
-import { firebaseAuth } from './providers/AuthProvider';
-import SignIn from './components/signInForm';
-
+// import { FirebaseContext } from './components/Firebase';
+import SignInPage from './components/signInForm';
+import Wishlist from './components/Wishlist';
+import Navigation from './components/Navigation'
+import * as ROUTES from './constants/routes';
+import { AuthUserContext } from './components/Session';
+import { withFirebase } from './components/Firebase';
+import withAuthentication from "./components/Session/withAuthentication";
+import { WishlistDataService } from "./requests";
 
 const history = createHistory();
-function App({ calendarStore }) {
-
-  const {handleSignIn} = useContext(firebaseAuth)
-  const { token } = useContext(firebaseAuth)
-
-  return (
+const App = ( {calendarStore, wishlistStore }) => (
+  <Router history={history}>
     <div>
-        <Router history={history}>
-          <Navbar bg="primary" expand="lg" variant="dark">
-            <Navbar.Brand href="#home">Calendar App</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="mr-auto">
-                <Nav.Link href="/">Home</Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-          <Route
-            path="/"
-            exact
-            render={props => token === null ? <SignIn /> : <HomePage {...props} calendarStore={calendarStore} />}
-          />
-        </Router>
+      <Navigation />
+
+      <hr />
+      <Route exact path={ROUTES.SIGN_IN} component={props=> <SignInPage {...props} />} />
+
+      <Route exact path={ROUTES.CALENDAR} component={props => <HomePage {...props} calendarStore={calendarStore} />} />
+      <Route exact path={ROUTES.WISHLIST} component={props => <Wishlist {...props} wishlistStore={wishlistStore} />} />
     </div>
-  );
-}
-export default App;
+  </Router>
+)
+
+export default withAuthentication(App);

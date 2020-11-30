@@ -1,13 +1,14 @@
 import React, {useState, useEffect, useContext, Children } from "react";
-import SignIn from "./components/signInForm"
+import { CalendarDataService }  from "./requests";
 import { Calendar, momentLocalizer } from "react-big-calendar";
+import './calendar.module.css';
 import moment from "moment";
 import Modal from "react-bootstrap/Modal";
 import CalendarForm from "./CalendarForm";
 import { observer } from "mobx-react";
-import CalendarDataService  from "./requests";
-import EventContainer from "./components/event"
-
+import EventContainer from "./components/event";
+import Background from './layouts/Background';
+import { withAuthorization } from  './components/Session';
 
 const localizer = momentLocalizer(moment);
 
@@ -17,13 +18,19 @@ function HomePage({ calendarStore }) {
   const [calendarEvent, setCalendarEvent] = React.useState({});
   const [initialized, setInitialized] = React.useState(false);
 
+  // TODO: set moment to current on 12/1
   const CURRENT_DATE = moment('2020,12,01').toDate();
+
+  const gradient = {
+    redColor: 'linear-gradient(180deg, #ad2301, #871B00)',
+    greenColor: 'linear-gradient(180deg, #789D7A, #4b7c4e)'
+  }
 
   const HighlightDateCellWrapper = ({children, value}) =>
     React.cloneElement(Children.only(children), {
         style: {
             ...children.style,
-            backgroundColor: value > CURRENT_DATE ? 'darkred' : 'forestgreen',
+            background: value > CURRENT_DATE ? gradient.redColor : gradient.greenColor
         },
     });
   const hideModals = () => {
@@ -34,9 +41,9 @@ function HomePage({ calendarStore }) {
   const editButtonClickHandler = (event, e) => {
     setShowAddModal(false);
     setShowEditModal(true);
+    console.log(event);
     let { id, title, start, end, description, supplyList, isGroupActivity, videoID, linkPreview } = event;
     const data = { id, title, start, end, description, supplyList, isGroupActivity, videoID, linkPreview };
-    CalendarDataService.updateEvent(data.id, data);
     setCalendarEvent(data);
 };
 
@@ -54,7 +61,7 @@ function HomePage({ calendarStore }) {
                 description: data.description,
                 supplyList: data.supplyList,
                 isGroupActivity: data.isGroupActivity,
-                vidoeID: data.videoID,
+                videoID: data.videoID,
                 linkPreview: data.linkPreview
             }
         });
@@ -62,8 +69,6 @@ function HomePage({ calendarStore }) {
         setInitialized(true);
     })
   };
-
-  console.log(calendarStore.calendarEvents);
 
   const handleSelect = (event, e) => {
     const { start, end } = event;
@@ -80,52 +85,54 @@ function HomePage({ calendarStore }) {
   });
 
   return (
-    <div className="page">
-      <Modal show={showAddModal} onHide={hideModals}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Advent Event</Modal.Title>
-        </Modal.Header>
+      <div className="page">
+        <Modal show={showAddModal} onHide={hideModals}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Advent Event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <CalendarForm
+              calendarStore={calendarStore}
+              calendarEvent={calendarEvent}
+              onCancel={hideModals.bind(this)}
+              edit={false}
+            />
+          </Modal.Body>
+        </Modal>
 
-        <Modal.Body>
-          <CalendarForm
-            calendarStore={calendarStore}
-            calendarEvent={calendarEvent}
-            onCancel={hideModals.bind(this)}
-            edit={false}
-          />
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showEditModal} onHide={hideModals}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Advent Event</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <CalendarForm
-            calendarStore={calendarStore}
-            calendarEvent={calendarEvent}
-            onCancel={hideModals.bind(this)}
-            edit={true}
-          />
-        </Modal.Body>
-      </Modal>
-      <Calendar
-        defaultDate={new Date(2020,11,1)}
-        localizer={localizer}
-        events={calendarStore.calendarEvents}
-        startAccessor="start"
-        endAccessor="end"
-        selectable={true}
-        style={{ height: "70vh" }}
-        onSelectSlot={handleSelect}
-        // onSelectEvent={editButtonClickHandler}
-        components= {{event: EventContainer({
-            onEditButtonClick: editButtonClickHandler}),
-            dateCellWrapper: HighlightDateCellWrapper,
-        }}
-      />
-    </div>
+        <Modal show={showEditModal} onHide={hideModals}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Advent Event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <CalendarForm
+              calendarStore={calendarStore}
+              calendarEvent={calendarEvent}
+              onCancel={hideModals.bind(this)}
+              edit={true}
+            />
+          </Modal.Body>
+        </Modal>
+        <Calendar
+          className="calendar"
+          defaultDate={new Date(2020,11,1)}
+          localizer={localizer}
+          events={calendarStore.calendarEvents}
+          startAccessor="start"
+          endAccessor="end"
+          selectable={true}
+          style={{ height: "70vh" }}
+          onSelectSlot={handleSelect}
+          components= {{event: EventContainer({
+              onEditButtonClick: editButtonClickHandler}),
+              dateCellWrapper: HighlightDateCellWrapper,
+          }}
+        />
+      < Background />
+      </div>
   );
 }
 
-export default observer(HomePage);
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(observer(HomePage));

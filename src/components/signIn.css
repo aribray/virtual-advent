@@ -1,0 +1,13 @@
+* {
+    box-sizing: border-box;
+}
+
+.form.ng-pristine {
+    display:flex;
+    margin: 20px;
+    justify-content: center;
+}
+
+.signIn-Form input {
+    background-color: rgb(245, 237, 220)
+}

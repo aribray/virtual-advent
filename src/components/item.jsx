@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const ItemContainer = ({ onEditButtonClick }) => props => {
+  console.log("ITEMCONTAINER!!!")
   return <Item item={props.item} onEditButtonClick={onEditButtonClick} />
 }
 

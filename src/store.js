@@ -15,4 +15,20 @@ class CalendarStore {
     }
 }
 
-export { CalendarStore };
+class WishlistStore {
+
+  constructor() {
+    this.wishlistItems = []
+
+    makeObservable(this, {
+        wishlistItems: observable,
+        setWishlistItems: action
+    })
+  }
+
+  setWishlistItems(wishlistItems) {
+      this.wishlistItems = wishlistItems
+    }
+}
+
+export { CalendarStore, WishlistStore };

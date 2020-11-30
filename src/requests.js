@@ -1,24 +1,49 @@
-import { firestore, auth } from "./firebase";
-import "firebase/firestore";
+// import firebase from 'firebase/app'
+// import "firebase/firestore";
 
-const db = firestore.collection("/items");
+import Firebase from "./components/Firebase/firebase";
+// // import firebase from 'firebase/app';
+// import 'firebase/firestore';
 
-class CalendarDataService {
+const firebase = new Firebase();
+
+class CalendarDataServiceClass extends Firebase {
   getAllEvents() {
-    return db;
+    return this.dbCalendar;
   }
 
   createEvent(event) {
-    return db.add(event);
+    return this.dbCalendar.add(event);
   }
 
   updateEvent(id, value) {
-    return db.doc(id).update(value);
+    return this.dbCalendar.doc(id).update(value);
   }
 
   deleteEvent(id) {
-    return db.doc(id).delete();
+    return this.dbCalendar.doc(id).delete();
   }
 }
 
-export default new CalendarDataService();
+class WishlistDataServiceClass extends Firebase{
+  getAllItems() {
+    return this.dbWishlist;
+  }
+
+  createItem(item) {
+    return this.dbWishlist.add(item);
+  }
+
+  updateItem(id, value) {
+    return this.dbWishlist.doc(id).update(value);
+  }
+
+  deleteItem(id) {
+    return this.dbWishlist.doc(id).delete();
+  }
+}
+
+const CalendarDataService = new CalendarDataServiceClass();
+const WishlistDataService = new WishlistDataServiceClass();
+
+export { CalendarDataService, WishlistDataService }

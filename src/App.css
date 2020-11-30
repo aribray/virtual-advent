@@ -1,7 +1,7 @@
 .page {
     padding: 20px;
   }
-  .form-control.react-datepicker-ignore-onclickoutside,
+  /* .form-control.react-datepicker-ignore-onclickoutside,
   .react-datepicker-wrapper {
     width: 465px !important;
   }
@@ -14,4 +14,4 @@
   .react-datepicker__time-list-item {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
       "Droid Sans", "Helvetica Neue", sans-serif;
-  }
+  } */

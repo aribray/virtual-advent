@@ -121,7 +121,6 @@ function Wishlist({ wishlistStore }) {
                 {data.name}
               </Avatar>
             }
-            title={data.item}
           />
           {itemURL}
             <CardContent>

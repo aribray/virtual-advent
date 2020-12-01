@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext, Children } from "react";
 import { CalendarDataService }  from "./requests";
 import { Calendar, momentLocalizer } from "react-big-calendar";
-import './calendar.module.css';
 import moment from "moment";
 import Modal from "react-bootstrap/Modal";
 import CalendarForm from "./CalendarForm";
@@ -18,8 +17,7 @@ function HomePage({ calendarStore }) {
   const [calendarEvent, setCalendarEvent] = React.useState({});
   const [initialized, setInitialized] = React.useState(false);
 
-  // TODO: set moment to current on 12/1
-  const CURRENT_DATE = moment('2020,12,01').toDate();
+  const CURRENT_DATE = moment().toDate();
 
   const gradient = {
     redColor: 'linear-gradient(180deg, #ad2301, #871B00)',

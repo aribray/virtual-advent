@@ -63,43 +63,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const CardItem = ({ classes, description, data, itemURL, EditButton }) => {
-  console.log(classes)
-  return (
-    <Grid item style={{boxSizing:'content-box', width: '100%'}} >
-      <Card className={classes.paper} key={data.id}>
-
-        <CardHeader
-          avatar={
-            <Avatar aria-label="wishlist-name"  className={classes.avatar} >
-              {data.name}
-            </Avatar>
-          }
-          title={data.item}
-        />
-        {itemURL}
-          <CardContent>
-          <Typography gutterBottom variant="h5" component="h2" className="item-name">
-              {data.item}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-              {description}
-          </Typography>
-          </CardContent>
-        <CardActions>
-          { EditButton }
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          </CardActions>
-      </Card>
-    </Grid>
-  );
-}
-
 
 function Wishlist({ wishlistStore }) {
   const [showAddModal, setShowAddModal] = React.useState(false);
@@ -130,16 +93,63 @@ function Wishlist({ wishlistStore }) {
     }
   })
 
+  const editButtonClickHandler = (wishlistItem, e) => {
+    setShowAddModal(false);
+    setShowEditModal(true);
+    let { id, name, item, itemURL, priority, description  } = wishlistItem;
+    const data = { id, name, item, itemURL, priority, description };
+    WishlistDataService.updateItem(data.id, data);
+    setWishlistItem(data);
+  };
+
+  const CardItem = ({ classes, description, data, itemURL }) => {
+
+    const EditButton = () => (
+      <button type="button" className="btn btn-primary" id="event-edit-button" onClick={(event) => editButtonClickHandler(data)}>
+        <strong>Edit Wishlist Item</strong>
+      </button>
+    )
+
+    console.log(classes)
+    return (
+      <Grid item style={{boxSizing:'content-box', width: '100%'}} >
+        <Card className={classes.paper} key={data.id}>
+
+          <CardHeader
+            avatar={
+              <Avatar aria-label="wishlist-name"  className={classes.avatar} >
+                {data.name}
+              </Avatar>
+            }
+            title={data.item}
+          />
+          {itemURL}
+            <CardContent>
+            <Typography gutterBottom variant="h5" component="h2" className="item-name">
+                {data.item}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+                {description}
+            </Typography>
+            </CardContent>
+          <CardActions>
+            <EditButton />
+            <IconButton aria-label="add to favorites">
+              <FavoriteIcon />
+            </IconButton>
+            <IconButton aria-label="share">
+              <ShareIcon />
+            </IconButton>
+            </CardActions>
+        </Card>
+      </Grid>
+    );
+  }
+
   const createItemCards = () => {
     const wishlistCards = grouped.forEach(function(value, key) {
       let eachPerson = [];
       for (const item of value) {
-
-        const EditButton = () => (
-          <button type="button" className="btn btn-primary" id="event-edit-button" onClick={(event) => editButtonClickHandler(item)}>
-            <strong>Edit Wishlist Item</strong>
-          </button>
-        )
 
         const data = {
           id: item.id,
@@ -175,7 +185,7 @@ function Wishlist({ wishlistStore }) {
 
           eachPerson.push(
             <Grid container spacing={8} style={{ boxSizing: 'content-box', width: '100%'}}>
-                <CardItem classes={classes} data={data} description={description} itemURL={itemURL} editButton={EditButton}/>
+                <CardItem classes={classes} data={data} description={description} itemURL={itemURL}/>
             </Grid>
           )
       }
@@ -186,14 +196,14 @@ function Wishlist({ wishlistStore }) {
     return content;
   }
 
-  const editButtonClickHandler = (wishlistItem, e) => {
-    setShowAddModal(false);
-    setShowEditModal(true);
-    let { id, name, item, itemURL, priority, description  } = wishlistItem;
-    const data = { id, name, item, itemURL, priority, description };
-    WishlistDataService.updateItem(data.id, data);
-    setWishlistItem(data);
-  };
+  // const editButtonClickHandler = (wishlistItem, e) => {
+  //   setShowAddModal(false);
+  //   setShowEditModal(true);
+  //   let { id, name, item, itemURL, priority, description  } = wishlistItem;
+  //   const data = { id, name, item, itemURL, priority, description };
+  //   WishlistDataService.updateItem(data.id, data);
+  //   setWishlistItem(data);
+  // };
 
   function groupBy(list, keyGetter) {
     const map = new Map();
